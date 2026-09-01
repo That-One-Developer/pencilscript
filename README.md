@@ -1,2 +1,2 @@
-# pencilscript
+# Pencilscript
 My PencilScript repo
