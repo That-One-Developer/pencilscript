@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta name="description" content=" Official pencilscript editor for the web!">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://uploads.onecompiler.io/43qg3ftzj/1782370680823/PencilScript.svg">
+<title>Pencilscript</title>
+<style>
+ body {
+  background: #eecf08;
+  padding: 15px;
+  display: grid;
+  font-family: 'Roboto', sans-serif;
+}
+h1 {
+	color: #010101;
+}
+a {
+  text-decoration: none;
+}
+#mainTitle {
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  font-size: 48px;
+}
+#mainDescription {
+  text-align: center;
+  margin-top: 0px;
+  margin-right: -170px;
+  padding: 0px;
+  font-size: 18px;
+}
+#footer {
+  text-align: center;
+  font-size: 16px;
+}
+#content {
+  display: flex;
+  justify-content: center;
+}
+#startButton {
+  background: rgb(249, 217, 56);
+  border: 3px solid black;
+  width: 75px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+}
+#startButton:hover {
+  background: #f9d938;
+  border: 3px solid black;
+  width: 80px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+}
+#editor {
+    flex-grow: 1;
+}
+#runButton {
+  background: rgb(249, 217, 56);
+  border: 3px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  }
+  #editor { 
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    place-self: center;
+    align-self: center;
+    }
+  #terminal {
+    display: block;
+    place-self: center;
+    align-self: center;
+    }
+  #runButton {
+    display: grid;
+    place-self: center;
+    align-self: center;
+  }
+  input::placeholder {
+    color: rgb(200,200,200);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<h1 id="mainTitle">Editor:</h1>
+<br>
+<button id="runButton">Run</button>
+<br>
+<div id="editor" contenteditable="plaintext-only"></div>   
+<br>
+<div id="terminal"></div>
+<script>
+    const textbox = document.getElementById("editor")
+    const run = document.getElementById("runButton")
+    const terminal = document.getElementById("terminal")
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+
+    textbox.style.width = "90dvw"
+    textbox.style.height = "300px"
+    textbox.style.border = "5px solid rgb(50,50,50)"
+    textbox.style.background = "rgb(120,120,120)"
+    textbox.style.color = "rgb(0,0,0)"
+    textbox.style.borderRadius = "10px"
+    textbox.style.fontFamily = "Monospace"
+    textbox.style.whiteSpace = "pre-wrap"
+    textbox.style.padding = "5px"
+
+    terminal.style.width = "90dvw"
+    terminal.style.height = "500px"
+    terminal.style.background = "rgb(0,0,0)"
+    terminal.style.border = "5px solid rgb(0,0,0)"
+    terminal.style.color = "rgb(255,255,255)"
+    terminal.style.borderRadius = "10px"
+    terminal.style.padding = "5px"
+    terminal.style.whiteSpace = "pre-wrap"
+    terminal.style.fontFamily = "Monospace"
+
+    run.style.width = "55dvw"
+
+    let terminalEmpty = true
+    let i = 0
+    let vars = {}
+
+    async function runCode(code) {
+      let cmd = code.split(" ")[0]
+      let args = code.slice(code.indexOf(" "), code.length).trim()
+      let words = args.split(" ")
+        
+      let type = undefined
+      if (args.startsWith('"') && args.endsWith('"')) {
+        type = "string"
+      }
+      else {
+      if (args.startsWith("'") && args.endsWith("'")) {
+        type = "data"
+      }
+      else {
+        if (/\d/.test(args)) {
+        type = "number"
+        }
+        else {
+        if (cmd != "create") {
+        pencilscriptError("Type Error: Invalid type given at line " + (i + 1))
+        }
+        let analyze = words[4]
+        else {
+          if (analyze.startsWith('"') && analyze.endsWith('"')) {
+            type = "string"
+          }
+         if (words[4].startsWith("'") && words[4].endsWith("'")) {
+            type = "data"
+          }
+          if (/\d/.test(words[4])) {
+            type = "number"
+          }
+        }
+        }
+      }
+      }
+      switch (cmd) {
+        case "write":
+        if (terminalEmpty) {
+          if (type === "string") {
+          terminal.textContent += args.replaceAll('"', "")
+          terminalEmpty = false
+          break
+        }
+      if (args.startsWith("'") && args.endsWith("'")) {
+        terminal.textContent += vars[args.replaceAll("'", "")]
+        terminalEmpty = false
+        break
+      }
+        if (type === "number") {
+          if (isFinite(args)) {
+            terminal.textContent += args
+            terminalEmpty = false
+            break
+          }
+          else {
+            pencilscriptError("Type Error: Recieved wrong type at line " + (i + 1))
+            return
+          }
+        }
+      }
+      else {
+        if (type === "string") {
+          terminal.textContent += "\n" + args.replaceAll('"', "")
+          break
+        }
+        if (args.startsWith("'") && args.endsWith("'")) {
+        terminal.textContent += "\n" + vars[args.replaceAll("'", "")]
+        terminalEmpty = false
+        break
+      }
+        if (type === "number") {
+          if (isFinite(args)) {
+            terminal.textContent += "\n" + args
+            break
+          }
+          else {
+            pencilscriptError("Type Error: Recieved wrong type at line " + (i + 1))
+            return
+          }
+        }
+      }
+      case "wait":
+      if (type === "number") {
+      await delay(args)
+      break
+      }
+      if (args.startsWith("'") && args.endsWith("'")) {
+     if (vars[args.replaceAll("'", "")].isFinite()) {
+      await delay(vars[args.replaceAll("'", "")])
+     }
+     else {
+      pencilscriptError("Type Error: Recieved wrong type at line " + (i + 1))
+     }
+      }
+      else {
+      pencilscriptError("Type Error: Recieved wrong type at line " + (i + 1))
+      return
+    }
+    case "ask":
+    await new Promise((resolve) => {
+    let input = document.createElement("input")
+    input.style.color = "rgb(255,255,255)"
+    input.style.background = "rgb(0,0,0)"
+    input.style.border = "3px solid rgb(255,255,255)"
+    if (type === "string") {
+    input.placeholder = args.replaceAll('"', "")
+    }
+    else {
+      if (type === "number") {
+      input.placeholder = args
+    } else {
+      pencilscriptError("Type Error: Recieved wrong type at line " + (i + 1))
+      return
+    }
+    }
+    terminal.textContent += "\n"
+    terminal.appendChild(input)
+    input.addEventListener("keydown", async function (e) {
+    if (e.key === "Enter") {
+    let value = input.value
+    input.remove()
+    resolve(value)
+    }
+    })
+    })
+break
+case "create":
+console.log(type)
+console.log(words[4])
+if (words[0] === "var" || words[0] === "variable" && words[2] === "with" && words[3] === "value") {
+  if (!Object.hasOwn(vars, words[1])) {
+    if (type === "string") {
+vars[words[1]] = words[4].replaceAll('"', "")
+    }
+    if (type === "data") {
+vars[words[1]] = vars[words[4]]
+    }
+    if (type === "number") {
+vars[words[1]] = words[4]
+    }
+break
+  }
+  else {
+    pencilscriptError("Data Error: Attempted to create data under name " + words[1] + " that already existed at line " + (i + 1))
+    return
+  }
+} else {
+  if (words[0] === "var" || words[0] === "variable") {
+    vars[words[1]] = undefined
+    break
+  } else {
+    pencilscriptError("Syntax Error: Invalid or unrecognized keywords found")
+    return
+  }
+}
+case "delete":
+if (Object.hasOwn(vars, args)) {
+  delete vars[words[0]]
+  break
+}
+else {
+  pencilscriptError("Data Error: Attempted to delete data of name " + words[1] + " that did not exist at line " + (i + 1))
+  return
+}
+default:
+pencilscriptError("Command Error: Invalid command at line " + (i + 1))
+return
+    }
+    }
+
+    function pencilscriptError(message) {
+      terminal.style.color = "rgb(255,0,0)"
+      terminal.textContent = message
+    }
+
+    run.addEventListener("click", async function(e) {
+    terminal.textContent = ""
+    terminal.style.color = "rgb(255,255,255)"
+    terminal.innerHTML = ""
+    let code = textbox.textContent
+    let lines = code.split("\n")
+    vars = {}
+    terminalEmpty = true
+    i = 0
+    for (i; i < lines.length; i++) {
+      let line = lines[i].trim()
+
+      if (line === "") {
+        continue
+      }
+      try {
+        await runCode(line)
+      }
+      catch (error) {
+        pencilscriptError("Interpreter Error: " + error)
+        return
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="description" content=" Official pencilscript editor for the web!">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://uploads.onecompiler.io/43qg3ftzj/1782370680823/PencilScript.svg">
+    <title>Pencilscript</title>
+<style>
+  body {
+  background: #eecf08;
+  padding: 15px;
+  display: grid;
+  font-family: 'Roboto', sans-serif;
+}
+h1 {
+	color: #010101;
+}
+a {
+  text-decoration: none;
+}
+footer {
+  text-align: center;
+}
+#mainTitle {
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  font-size: 48px;
+}
+#mainDescription {
+  text-align: center;
+  margin-top: 0px;
+  margin-right: -170px;
+  padding: 0px;
+  font-size: 18px;
+}
+#footer {
+  text-align: center;
+  font-size: 16px;
+}
+#content {
+  display: flex;
+  justify-content: center;
+}
+#startButton {
+  background: rgb(249, 217, 56);
+  border: 3px solid black;
+  width: 75px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+}
+#startButton:hover {
+  background: #f9d938;
+  border: 3px solid black;
+  width: 80px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+}
+#editor {
+    flex-grow: 1;
+}
+#runButton {
+  background: rgb(249, 217, 56);
+  border: 3px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  }
+  #info {
+    text-align: center;
+  }
+#bugLink {
+  color: blue;
+  text-decoration: none;
+}
+</style>
+  </head>
+  <body>
+    <div id="headings">
+      <h1 id="mainTitle">Pencilscript</h1>
+      <h4 id="mainDescription">for the web</h4>
+      </div>
+      <div id="content">
+      <a href="editor.html"><button id="startButton">Start</button></a>
+      </div>
+      <div id="editor"></div>
+      <br>
+      <p id="info">Version Alpha 1.1</p>
+      <br>
+      <p id="info">Found a bug? <a href="https://github.com/That-One-Developer/pencilscript" id="bugLink">Report on Github</a></p>
+  </body>
+</html>
