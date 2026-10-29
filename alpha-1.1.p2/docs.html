@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pencilscript</title>
+            <meta name="description" content="The official Pencilscript editor for the web!">
+            <meta name="robots" content="index, nofollow">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="referrer" content="no-referrer">
+            <link rel="image/svg" href="https://uploads.onecompiler.io/43qg3ftzj/1782370680823/PencilScript.svg">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+            body {
+                width: 100dvw;
+                height: 590dvh;
+                background: linear-gradient(rgb(230,200,0), rgb(255,150,0));
+                overflow-x: clip;
+                text-align: center;
+                font-family: 'Inter';
+                text-wrap: pretty;
+            }
+            button {
+                background: rgb(255,200,0);
+                border: 3px solid black;
+                font-family: 'Inter';
+            }
+            button:hover {
+                background: rgb(255,220,0);
+                transition: background 0.3s;
+            }
+            pre {
+                background: rgb(128,128,128);
+                width: 50dvw;
+                place-self: center;
+                padding: 5px;
+                border: 3px solid rgb(200,200,200);
+                border-radius: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Docs</h1>
+        <nav class="pages">
+            <a href="index.html"><button>Home</button></a>
+            <a href="about.html"><button>About</button></a>
+            <a href="editor.html"><button>Editor</button></a>
+            <button>Docs</button></a>
+        </nav>
+<p>Hello! If you are reading this, this is a special file designed for those who:</p>
+<ul>
+<li>Wish to modify Pencilscript (<strong>please give credit</strong>)</li>
+<li>Want to know how Pencilscript works internally</li>
+<li>Are just curious about Pencilscript in general</li>
+</ul>
+<p>Lucky for you, you are in the right place! This also gives documentation for this version, just so you know how everything works.</p>
+<h1 id="part-one-documentation">Part One: Documentation</h1>
+<p>Of course, if we want to know how Pencilscript works in the <em>inside</em>, we have to know how it works on the <em>outside</em></p>
+<h1 id="commands-">Commands:</h1>
+<h3 id="write-">Write:</h3>
+<p>The write command is simple. Write text to the terminal. It is similar to python&#39;s <em>print()</em> command, Javascript&#39;s <em>console.log()</em>, or PHP&#39;s <em>echo</em>. Its syntax is:</p>
+<pre><code><span class="hljs-built_in">write</span> <span class="hljs-string">"Hello world!"</span>
+<span class="hljs-built_in">write</span> <span class="hljs-string">'variable'</span>
+<span class="hljs-built_in">write</span> <span class="hljs-number">0011101000101001</span>
+</code></pre><h3 id="error-">Error:</h3>
+<p>The error command writes to the terminal as well, except in an error. </p>
+<pre><code><span class="hljs-keyword">error </span>"Custom Error: 1 + 1 is actually 11."
+error 'err'
+error 011011100110111100100001
+</code></pre><h3 id="ask-">Ask:</h3>
+<p>The ask command is the exact opposite of the <em>write</em> command. It gets input from the user. Similar to python&#39;s <em>input()</em> command or Node.js&#39; <em>question()</em> method. Its syntax is:</p>
+<pre><code><span class="hljs-attribute">ask</span> <span class="hljs-string">"Question"</span>
+ask <span class="hljs-string">'query'</span>
+ask <span class="hljs-number">00111111</span>
+</code></pre><p>You may also add <em>and save it in</em> after to save the input to a variable.</p>
+<h3 id="clear-">Clear:</h3>
+<p>The clear command clears <strong>everything</strong> from the terminal. It does not accept arguments. Its syntax is:</p>
+<pre><code><span class="hljs-built_in">clear</span>
+</code></pre><h3 id="wait-">Wait:</h3>
+<p>The wait command allows you to pause execution of a Pencilscript program. Its syntax is</p>
+<pre><code><span class="hljs-built_in">wait</span> 1
+<span class="hljs-built_in">wait</span> <span class="hljs-string">'time'</span>
+</code></pre><p>Additionally, you may add milliseconds, or its shorthand, ms, seconds, or its shorthand, secs (or sec if the amount of time waited is 1), or minutes, or its shorthand, mins (once again, min if the amount of time waited is 1)</p>
+<h3 id="create-">Create:</h3>
+<p>This command allows you to define something. So far, its only use is for variables. Unlike other coding languages, assigning a value to a variable that doesn&#39;t exist does not make a variable. The syntax is:</p>
+<pre><code><span class="hljs-keyword">create</span> <span class="hljs-keyword">var</span> <span class="hljs-keyword">variable</span>
+</code></pre><p>Note: You may just plug the name of the variable in, you do not need to worry about quotes. Additionally, you may add <em>with value</em> to assign a value to a variable on creation. This, however does follow quotation rules.</p>
+<h3 id="delete-">Delete:</h3>
+<p>This command allows you to delete a variable. Its syntax is:</p>
+<pre><code><span class="hljs-keyword">delete</span> <span class="hljs-string">"variable"</span>
+<span class="hljs-keyword">delete</span> <span class="hljs-string">'var'</span>
+<span class="hljs-keyword">delete</span> <span class="hljs-number">1</span>
+</code></pre><p>Just to note, when you delete a variable with the name of the contents of a variable (<em>delete &#39;var&#39;</em> as an example) you are deleting the variable that has the same name as the content of that variable.</p>
+<h1 id="actions">Actions</h1>
+<p>There is a difference between a <em>command</em> and an <em>action</em>. A command is like a structure. It allows you to put actions together to do stuff. Let&#39;s take an example.</p>
+<pre><code>write <span class="hljs-number">1</span> + <span class="hljs-number">1</span>
+</code></pre><p>In this scenario, we see write is the command, and 1 + 1 is the action. The command is what does, the action is what it is doing. We also label things like comments an action. After all, it needs to be ignored by the interpreter, and that is something being done. Plus, calling it a command would make not much sense, wouldn&#39;t it? Anyhow, the whole point of this section is to describe all the actions in Pencilscript, as of this version. Actions themselves can have 2 different forms. Operators and methods. Operators direct methods or commands into doing specific things. Methods perform specific things based on input. Common structures are:</p>
+<pre><code>`command value <span class="hljs-function"><span class="hljs-keyword">method</span>`
+
+
+`<span class="hljs-title">command</span> <span class="hljs-title">value</span> <span class="hljs-title">operator</span> <span class="hljs-title">value</span>`
+
+
+`<span class="hljs-title">command</span> <span class="hljs-title">value</span> <span class="hljs-title">operator</span> <span class="hljs-title">value</span> <span class="hljs-title">method</span>`</span>
+</code></pre><h3 id="comment-method-">Comment Method:</h3>
+<p>To leave a comment in Pencilscript, simply start your line with a slash. An example is:</p>
+<pre><code>/ `This is a pencilscript comment! Horray!`
+</code></pre><h3 id="storing-method-">Storing Method:</h3>
+<p>To store a value in a variable (example: <em>x = 1</em>) in Pencilscript, you simply go:</p>
+<pre><code><span class="hljs-attr">var</span> = <span class="hljs-string">"value"</span>
+</code></pre><h3 id="additon-operator-">Additon Operator:</h3>
+<p>The addition operator allows adding numbers or equations together. It is:</p>
+<pre><code>write <span class="hljs-number">1</span> + <span class="hljs-number">1</span>
+write <span class="hljs-number">1</span> + <span class="hljs-number">-2</span> + <span class="hljs-number">1</span>
+</code></pre><h3 id="subtraction-operator-">Subtraction Operator:</h3>
+<p>The subtraction operator is the opposite of the addition operator, subtracting numbers or equations from eachother. An example is:</p>
+<pre><code>write <span class="hljs-number">1</span> - <span class="hljs-number">1</span>
+write <span class="hljs-number">1</span> - <span class="hljs-number">2</span> + <span class="hljs-number">1</span>
+</code></pre><h3 id="multiplication-operator-">Multiplication Operator:</h3>
+<p>The multiplication operator can multiply numbers and equations together such as:</p>
+<pre><code>write <span class="hljs-number">2</span> * <span class="hljs-number">2</span>
+write <span class="hljs-number">-2</span> * <span class="hljs-number">5</span> - <span class="hljs-number">3</span>
+</code></pre><h3 id="division-operator-">Division Operator:</h3>
+<p>It is the exact opposite of the multiplication operator. It can divide numbers and equations:</p>
+<pre><code>write <span class="hljs-number">4</span> / <span class="hljs-number">2</span>
+write <span class="hljs-number">1</span> / <span class="hljs-number">2</span> + <span class="hljs-number">4</span> - <span class="hljs-number">1</span>
+</code></pre><h3 id="modulo-operator-">Modulo Operator:</h3>
+<p>The modulo operator works closely with division. It returns the remainder of a division problem, or 0 if there is no remainder.</p>
+<pre><code>write <span class="hljs-number">5</span> % <span class="hljs-number">5</span>
+</code></pre><h3 id="to-uppercase-method-">To Uppercase Method:</h3>
+<p>This method converts a string of alphabetical letters into their uppercase form. It only accepts strings and variables.</p>
+<pre><code><span class="hljs-built_in">write</span> <span class="hljs-string">"bro."</span> <span class="hljs-keyword">to</span> uppercase
+</code></pre><h3 id="to-lowercase-method-">To Lowercase Method:</h3>
+<p>This method converts a string of alphabetical letters into their lowercase form. It only accepts strings and variables, just like its opposite.</p>
+<pre><code><span class="hljs-built_in">write</span> <span class="hljs-string">"is SHAKESPEARE really Dead?"</span> <span class="hljs-keyword">to</span> lowercase
+</code></pre><h3 id="reversed-method-">Reversed Method:</h3>
+<p>This method converts a string or variable (as of now) into reverse. We plan, eventually, to extend this to arrays, but arrays do not exist in Pencilscript as of now.</p>
+<pre><code><span class="hljs-attribute">ask</span> <span class="hljs-string">"reversed"</span> rеversed
+</code></pre><h3 id="trim-method-">Trim Method:</h3>
+<p>This method removes extra spaces and tabs in front of or behind text.</p>
+<pre><code><span class="hljs-built_in">write</span> <span class="hljs-string">" I need a cut! "</span> trimmed
+</code></pre><h1 id="part-2-inner-workings">Part 2: Inner Workings</h1>
+<p>Now that you are aware of how pencilscript works on the outside, it is time to look at it on the inside.</p>
+<h3 id="functions">Functions</h3>
+<p>When you look in the code, you find a few functions. First, there is <em>pError()</em>. This is the error function that Pencilscript uses. It clears the innerText and innerHTML of the terminal, changes the color to red, then throws an error, then returns from it&#39;s function. Then, we have a collection of async functions. These are the commands. Note the best way to tell an action from a command is to check its function. An action uses a regular function instead.</p>
+<h3 id="the-run-event-listener">The Run Event Listener</h3>
+<p>This is where the main interpreter is. It is an async event listener, which looks like:</p>
+<pre><code>run.addEventListener(<span class="hljs-string">"click"</span>, <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">e</span>) </span>{ ... })
+</code></pre><p>Inside is a for loop. It uses the variable <em>i</em> to track it&#39;s index.</p>
+<h3 id="the-for-loop">The For loop</h3>
+<p>The for loop can be split into 3 main parts. The declarations, identification, and the execution. The declarations are a bunch of variables that are reset to undefined. If they stayed the same, likely some wonky things would happen. The identification is when the command and action is found (refered to as a modifier in the code). It uses a switch case system, and heavily relies on the fact that _Functions are first class citizens,_see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions">functions</a>. The execution is executing that function using the passed in data. We can pass in the variables directly to avoid long switch case chains with code inside them. An example is provided below:</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">example</span>(<span class="hljs-params">txt</span>) </span>{ 
+    <span class="hljs-keyword">return</span> txt.toUpperCase() 
+    } 
+    <span class="hljs-keyword">let</span> x = example 
+    <span class="hljs-built_in">console</span>.log(x(<span class="hljs-string">"input"</span>))
+</code></pre><h3 id="errors">Errors</h3>
+<p>With great power, comes great responsibility. Instead, comes great amounts of errors.</p>
+<h4 id="type-errors-">Type Errors:</h4>
+<p>When you pass the wrong type into a command:</p>
+<pre><code><span class="hljs-built_in">wait</span> <span class="hljs-string">"time"</span>
+</code></pre><h4 id="syntax-errors-">Syntax Errors:</h4>
+<p>When you mess up the syntax of a command:</p>
+<pre><code><span class="hljs-keyword">create</span> <span class="hljs-string">"time"</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">check</span> your watch
+</code></pre><h4 id="interpreter-error-">Interpreter Error:</h4>
+<p>Probably not your fault, a problem with the interpreter. Report immediately.</p>
+<pre><code><span class="hljs-type">I</span> don<span class="hljs-symbol">'t</span> have an example <span class="hljs-keyword">for</span> <span class="hljs-keyword">this</span>
+</code></pre><h4 id="arithmetic-error-">Arithmetic Error:</h4>
+<p>Messing up your math. I thought you learned this in school!</p>
+<pre><code>write <span class="hljs-number">1</span> / <span class="hljs-number">0</span>
+</code></pre><h4 id="string-error-">String Error:</h4>
+<p>Messing up string (text) operations instead of math!</p>
+<pre><code><span class="hljs-built_in">write</span> <span class="hljs-number">18</span> <span class="hljs-keyword">to</span> uppercase
+</code></pre>
+    </body>
+</html>

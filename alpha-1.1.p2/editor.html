@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pencilscript</title>
+            <meta name="description" content="The official Pencilscript editor for the web!">
+            <meta name="robots" content="index, nofollow">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="referrer" content="no-referrer">
+            <link rel="image/svg" href="https://uploads.onecompiler.io/43qg3ftzj/1782370680823/PencilScript.svg">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+            body {
+                width: 100dvw;
+                height: 120dvh;
+                background: linear-gradient(rgb(230,200,0), rgb(255,150,0));
+                overflow-x: clip;
+                text-align: center;
+                font-family: 'Inter';
+            }
+            button {
+                background: rgb(255,200,0);
+                transition: background 0.3s;
+                border: 3px solid black;
+                font-family: 'Inter';
+            }
+            button:hover {
+                background: rgb(255,220,0);
+                transition: background 0.3s;
+            }
+            input {
+                background: rgb(0,0,0);
+                border: 3px solid rgb(255,255,255);
+                color: rgb(255,255,255);
+                outline: none;
+            }
+            input::placeholder {
+                color: rgb(255,255,255);
+                font-style: italic;
+            }
+            #run {
+                width: 65dvw;
+                padding: 5px;
+            }
+            #textbox {
+                width: 80dvw;
+                height: 270px;
+                background: rgb(255,255,255);
+                border: 4px solid rgb(0,0,0);
+                place-self: center;
+                text-align: left;
+                font-family: 'Monospace';
+                font-size: 14px;
+                padding: 7px;
+                outline: none;
+            }
+            #terminal {
+                width: 80dvw;
+                height: 300px;
+                background: rgb(0,0,0);
+                color: rgb(255,255,255);
+                border: 4px solid white;
+                place-self: center;
+                text-align: left;
+                font-family: 'Monospace';
+                font-size: 14px;
+                padding: 7px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Editor</h1>
+        <nav class="pages">
+            <a href="index.html"><button>Home</button></a>
+            <a href="about.html"><button>About</button></a>
+            <button>Editor</button>
+            <a href="docs.html"><button>Docs</button></a>
+        </nav>
+        <br>
+        <button id="run">Run</button>
+        <br>
+        <br>
+        <div contenteditable="true" id="textbox"></div>
+        <br>
+        <div id="terminal"></div>
+        <script>
+            // Make sure to read the documentation, or else this will be spaghetti code for you. Still is even if you read the documentation, just less spaghetti.
+            let run = document.getElementById("run")
+            let textbox = document.getElementById("textbox")
+            let terminal = document.getElementById("terminal")
+            let i = 0
+            let empty = true
+            let errored = false
+            let vars = []
+            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+            async function pError(error, i) {
+                terminal.innerText = ""
+                terminal.innerHTML = ""
+                terminal.style.color = "rgb(255,0,0)"
+                terminal.innerText += error + i
+                errored = true
+                return
+            }
+
+            async function clear(i, val, type, words) {
+                if (words[1] === undefined) {
+                terminal.style.color = "rgb(255,255,255)"
+                terminal.innerText = ""
+                empty = true
+                }
+                else {
+                pError("Syntax Error: Too many arguments", (i + 1))
+                errored = true
+                return
+                }
+            }
+
+            async function write(i, val, type, words) {
+                if (empty === true) {
+                    terminal.innerText += val
+                    empty = false
+                }
+                else {
+                    terminal.innerText += "\n" + val
+                }
+            }
+
+            async function wait(i, val, type, words) {
+                if (type === "number") {
+                    await delay(val)
+                }
+                else {
+                if (type === "data") {
+                    if (!isNaN(vars[val])) {
+                        await delay(vars[val])
+                    }
+                    else {
+                        pError("Type Error: Incorrect type recieved at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                } 
+                else {
+                        pError("Type Error: Incorrect type recieved at line ", (i + 1))
+                        errored = true
+                        return
+                }
+                }
+            }
+               
+            async function ask(i, val, type, words) {
+                let box = document.createElement("input")
+                box.type = "text"
+                box.placeholder = val
+                if (!empty) {
+                terminal.innerText += "\n"
+                }
+                terminal.appendChild(box)
+                await new Promise((resolve) => {
+                box.addEventListener("keydown", async function (e) {
+                    if (e.key === "Enter") {
+                    if (words.length === 7 && words[2] === "and" && words[3] === "save" && words[4] === "it" && words[5] === "in") {
+                        vars[words[6].replaceAll("'", "")] = box.value
+                    }
+                    else {
+                        if (words[2] !== undefined) {
+                        pError("Type Error: Incorrect type recieved at line ", (i + 1))
+                        errored = true
+                        return
+                        }
+                        else {
+                    box.remove()
+                    resolve()
+                        }
+                    }
+                    box.remove()
+                    resolve()
+                    }
+                })
+                })
+            }
+                async function create(i, val, type, words) {
+                if (!Object.hasOwn(vars, val)) {
+                    if (words[1] === "var" && words[3] === "with" && words[4] === "value") {
+                    vars[words[2]] = val
+                    }
+                    else {
+                        if (words[1] === "var" || words[1] === "variable" && words[3] === undefined) {
+                            vars[words[2]] = null
+                        }
+                    }
+                }
+                else {
+                    pError("Data Error: Attempted to create non-existent variable of name " + val + " at line ", (i + 1))
+                    errored = true
+                }
+            }
+            
+                async function del(i, val, type, words) {
+                if (Object.hasOwn(vars, val)) {
+                    delete vars[val]
+                }
+                else {
+                    pError("Data Error: Attempted to delete non-existent variable of name " + val + " at line ", (i + 1))
+                    errored = true
+                }
+            }
+
+                async function err(i, val, type, words) {
+                    pError(val + " at line ", (i + 1))
+                    errored = true
+            }
+
+            function toUpper(i, val, type, words) {
+                try {
+                    return val.toUpperCase()
+                }
+                catch (error) {
+                    if (error.name === "TypeError") {
+                        pError("String Error: Incorrect type recieved using action at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                    else {
+                        pError("Interpreter Error: " + error.message + " at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+            }
+
+            function toLower(i, val, type, words) {
+                try {
+                    return val.toLowerCase()
+                }
+                catch (error) {
+                    if (error.name === "TypeError") {
+                        pError("String Error: Incorrect type recieved using action at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                    else {
+                        pError("Interpreter Error: " + error.message + " at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+            }
+
+                function toReverse(i, val, type, words) {
+                    return Array.from(val).reverse().join("")
+                }
+
+            function toTrim(i, val, type, words) {
+                try {
+                    return val.trim()
+                }
+                catch (error) {
+                    if (error.name === "TypeError") {
+                        pError("String Error: Incorrect type recieved using action at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                    else {
+                        pError("Interpreter Error: " + error.message + " at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+            }
+
+
+            function add(i, val, type, words, modifiers) {
+                if (isNaN(Number(val) + Number(modifiers.replaceAll("+", "")))) {
+                    pError("Aritmetic Error: Invalid addition statement with non numbers at line ", (i + 1))
+                    errored = true
+                    return
+                }
+                else {
+                    return Number(val) + Number(modifiers.replaceAll("+", ""))
+                }
+                }
+
+
+            function sub(i, val, type, words, modifiers) {
+                    if (isNaN(Number(val) - Number(modifiers.replaceAll("-", "")))) {
+                    pError("Arithmetic Error: Invalid subtraction statement with non numbers at line ", (i + 1))
+                    errored = true
+                    return
+                }
+                else {
+                    return Number(val) - Number(modifiers.replaceAll("-", ""))
+                }
+                } 
+
+
+                function times(i, val, type, words, modifiers) {
+                if (isNaN(Number(val) * Number(modifiers.replaceAll("*", "")))) {
+                    pError("Arithmetic Error: Invalid multiplication statement with non numbers at line ", (i + 1))
+                    errored = true
+                    return
+                }
+                else {
+                    return Number(val) * Number(modifiers.replaceAll("*", ""))
+                }
+                }
+
+
+            function div(i, val, type, words, modifiers) {
+                    if (isNaN(Number(val) / Number(modifiers.replaceAll("/", "")))) {
+                    pError("Arithmetic Error: Invalid division statement with non numbers at line ", (i + 1))
+                    errored = true
+                    return
+                }
+                else {
+                    if (isFinite(Number(val) / Number(modifiers.replaceAll("/", "")))) {
+                    return Number(val) / Number(modifiers.replaceAll("/", ""))
+                    }
+                    else {
+                        pError("Arithmetic Error: Division by 0 at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+                } 
+
+                function rem(i, val, type, words, modifiers) {
+                    if (isNaN(Number(val) % Number(modifiers.replaceAll("%", "")))) {
+                    pError("Arithmetic Error: Invalid modulo (remainder) statement with non numbers at line ", (i + 1))
+                    errored = true
+                    return
+                }
+                else {
+                    if (isFinite(Number(val) % Number(modifiers.replaceAll("%", "")))) {
+                    return Number(val) % Number(modifiers.replaceAll("%", ""))
+                    }
+                    else {
+                        pError("Arithmetic Error: Modulo (remainder) by 0 at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+                } 
+
+                function exp(i, val, type, words, modifiers) {
+                    if (isNaN(Number(val) ** Number(modifiers.replaceAll("^", "")))) {
+                    pError("Arithmetic Error: Invalid exponent statement with non numbers at line ", (i + 1))
+                    errored = true
+                    return
+                }
+                else {
+                    if (isFinite(Number(val) ** Number(modifiers.replaceAll("^", "")))) {
+                    return Number(val) ** Number(modifiers.replaceAll("^", ""))
+                    }
+                    else {
+                        pError("Arithmetic Error: Invalid exponent statement that results in integer overflow at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+                } 
+
+            run.addEventListener("click", async function (e) {
+                // Basic Setup
+                let code = textbox.innerText.split("\n").replaceAll('“', '"').replaceAll('”', '"')
+                terminal.innerText = ""
+                terminal.innerHTML = ""
+                terminal.style.color = "rgb(255,255,255)"
+                empty = true
+                errored = false
+                vars = []
+
+                // Interpreter Loop
+
+                for (i = 0; i < code.length; i++) {
+                    let line = code[i]
+                    let words = line.split(" ")
+                    let cmd = undefined
+                    let type = undefined
+                    let val = undefined
+                    let sample = undefined
+                    let modifiers = undefined
+                    let mod = undefined
+                    if (line === "") {
+                        continue
+                    }
+
+                    // Identifying the command
+
+                    switch(words[0]) {
+                        case "write":
+                        cmd = write
+                        break
+                        case "clear":
+                        cmd = clear
+                        break
+                        case "wait":
+                        cmd = wait
+                        break
+                        case "ask":
+                        cmd = ask
+                        break
+                        case "create":
+                        cmd = create
+                        break
+                        case "delete":
+                        cmd = del
+                        break
+                        case "error":
+                        cmd = err
+                        break
+                        case "comment":
+                        continue
+                    }
+
+                    // Finding the type
+
+                    // Checking for strings
+                    dq1 = line.indexOf('"')
+                    dq2 = line.lastIndexOf('"')
+                    if (dq1 !== dq2) {
+                            type = "string"
+                            val = line.substring(dq1 + 1, dq2)
+                            modifiers = line.substring(dq2 + 1, line.length).trim()
+                    } else {
+                            if (dq1 === dq2 && line.includes('"')) {
+                            pError("Syntax Error: Missing quotation for string at line ", (i + 1))
+                            errored = true
+                            return
+                            } 
+                            else {
+                     // Checking for data
+                    sq1 = line.indexOf("'")
+                    sq2 = line.lastIndexOf("'")
+                    if (sq1 !== sq2) {
+                            type = "data"
+                            val = vars[line.substring(sq1 + 1, sq2)]
+                            modifiers = line.substring(sq2 + 1, line.length)
+                    } 
+                    else {
+                            if (sq1 === sq2 && line.includes("'")) {
+                            pError("Syntax Error: Missing quotation for data at line ", (i + 1))
+                            errored = true
+                            return
+                            } 
+                            else {
+                                s1 = words[1]
+                                if (!isNaN(Number(s1))) {
+                                    type = "number"
+                                    val = s1
+                                    modifiers = words.slice(2).join("")
+                                 }
+                                else {
+                                    type = undefined
+                                    val = undefined
+                                    modifiers = words.slice(2).join("")
+                                }
+                            }
+                            }
+                    } 
+                    }
+
+                    // First, we need to identify the modifier
+
+                    // For string and data modifiers (we don't track it)
+
+                    switch (modifiers) {
+                        case "to uppercase":
+                        mod = toUpper
+                        break
+                        case "to lowercase":
+                        mod = toLower
+                        break
+                        case "reversed":
+                        mod = toReverse
+                        break
+                        case "trimmed":
+                        mod = toTrim
+                        break
+
+                    }
+
+                    // For math modifiers
+                    
+                    switch (modifiers.toString()[0]) {
+                        case "+":
+                        mod = add
+                        break
+                        case "-":
+                        mod = sub
+                        break
+                        case "*":
+                        mod = times
+                        break
+                        case "/":
+                        mod = div
+                        break
+                        case "%":
+                        mod = rem
+                        break
+                        case "^":
+                        mod = exp
+                        break
+                    }
+        if (errored === true) {
+            return // Instantly kills the loop if an error was drawn to the terminal
+        }
+                    if (mod) {
+                        val = mod(i, val, type, words, modifiers)
+                    }
+                    
+                    // Running the command at last
+
+                    if (cmd) {
+                        try {
+                    await cmd(i, val, type, words)
+                        }
+                        catch (err) {
+                    pError("Interpreter Error: " + err.message, (i + 1))
+                    errored = true
+                    return
+                        }
+                    }
+                    else {
+                        pError("Syntax Error: Unknown command found at line ", (i + 1))
+                        errored = true
+                        return
+                    }
+                }
+            })
+
+            // Done!
+        </script>
+    </body>
+</html>
