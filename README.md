@@ -3,4 +3,4 @@ This is my repo for my coding language PencilScript. We are now on **alpha 1.1**
 
 ## Our Website:
 
-See our website, [pencilscript-site.github.io](pencilscript-site.github.io)!
+See our website, [pencilscript-site.github.io](https://pencilscript-site.github.io)!
